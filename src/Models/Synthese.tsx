@@ -1,7 +1,7 @@
 import { Transaction } from "./Transaction";
 
 export class Synthese {
-  transactions:Transaction[];
+  transactions:Transaction[]=[];
   getDepenses() : number{
     let depense:number=0;
     
