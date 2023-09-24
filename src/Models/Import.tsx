@@ -8,7 +8,7 @@ export class Import {
     this.filepath = _filepath;
   }
 
-  getData = (): Transaction[] => {
+  getTransactions = (): Transaction[] => {
     try {
       const workbook = XLSX.readFile(this.filepath, {
         type: 'binary',
@@ -46,5 +46,28 @@ export class Import {
           });
           return transactions;
       }
+  };
+  getSolde = (): number => {
+    try {
+      const workbook = XLSX.readFile(this.filepath, {
+        type: 'binary',
+        cellDates: true,
+      });
+      
+      const wsnames = workbook.SheetNames;
+      const wsname = workbook.SheetNames[0];
+      const ws = workbook.Sheets[wsname];
+      const data: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+const solde = data[6][2];
+let soldeString:string=solde.split("€")[0].replace(",",".").trim();
+
+const whitespaceRemoved = soldeString.replace(/\s/g, '');
+let number =parseFloat(whitespaceRemoved)
+return number;
+    } catch (error) {
+        return 0;
+    }
+
+      
   };
 }
