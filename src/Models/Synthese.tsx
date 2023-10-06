@@ -1,19 +1,17 @@
-import { DeclarationDepense } from './DeclarationDepense';
+import {DeclarationDepense} from './DeclarationDepense';
 import {Solde} from './Solde';
 import {Transaction} from './Transaction';
 
 export class Synthese {
-  
- 
   /**
    *
    */
   constructor(transactions: Transaction[]) {
     this.Transactions = transactions;
-    this.DeclarationsDepenses= [];
+    this.DeclarationsDepenses = [];
   }
   private Transactions: Transaction[];
-  public DeclarationsDepenses :DeclarationDepense[];
+  public DeclarationsDepenses: DeclarationDepense[];
   getDepenses(): number {
     let depense: number = 0;
 
@@ -62,16 +60,39 @@ export class Synthese {
     return evolutionSolde;
   }
 
-
-
   declarerDepenses(depense: DeclarationDepense) {
-this.DeclarationsDepenses.push(depense)
+    this.DeclarationsDepenses.push(depense);
   }
-///
+  ///
 
-  checkDeclarations(): [Transaction, DeclarationDepense][] {
-    
-    return [this.Transactions.filter(t=>t.Validation==false),this.DeclarationsDepenses.filter(dep=>dep.Confirmation==false)]
+  checkDeclarations() {
+    let uncheckedTransactions = this.Transactions.filter(
+      t => t.Validation == false,
+    );
+    let uncheckedDeclaration = this.DeclarationsDepenses;
+    let matchedTransactions: any[] = [];
+    uncheckedTransactions.forEach(element => {
+      uncheckedDeclaration.forEach(decla => {
+        if (Math.abs(decla.Montant) == Math.abs(element.MontantOpération))
+          matchedTransactions.push({transaction: element, declaration: decla});
+      });
+    });
+    return {uncheckedTransactions, uncheckedDeclaration, matchedTransactions};
   }
 
+  ConfirmDeclaration(
+    confirmTransaction: Transaction,
+    confirmedDeclaration: DeclarationDepense,
+  ) {
+    let indexDeclarationToDelete: number = this.DeclarationsDepenses.findIndex(
+      d =>
+        d.Montant == confirmedDeclaration.Montant &&
+        d.Tag == confirmedDeclaration.Tag,
+    );
+
+    this.DeclarationsDepenses.splice(indexDeclarationToDelete, 1);
+    let tr= this.Transactions.find(t => t.Id == confirmTransaction.Id);
+    tr.Validation=true;
+
+  }
 }

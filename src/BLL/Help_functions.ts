@@ -3,12 +3,11 @@ import { Transaction } from '../Models/Transaction';
 
 
 export const getData =(filepath :string):Transaction[]=>{
-    const workbook = XLSX.readFile(filepath, {type: "binary",cellDates:true});
+    const workbook = XLSX.read(filepath, {type:'binary'});
     const wsname = workbook.SheetNames[0];
     const ws = workbook.Sheets[wsname];
-    console.log("ws")
-    console.log(ws)
     const data:string[][] = XLSX.utils.sheet_to_json(ws, {header:1});
+    // console.log(data)
     const transactionsDATA:string[][]=data.slice(10)
     let transactions:Transaction[]=[];
     var id: number=0;
@@ -22,5 +21,6 @@ export const getData =(filepath :string):Transaction[]=>{
         transactions.push(tr)
 
     });
+    console.log(transactions);
     return transactions
 }

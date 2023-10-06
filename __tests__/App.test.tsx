@@ -119,23 +119,20 @@ describe('Declaration Depense', () => {
     const importer = new Import('D:\\papareleve.xlsx');
     const result = importer.getTransactions();
     synthese = new Synthese(result);
-    declarationDepense = new DeclarationDepense(new Date(), 'carburant C4', 85);
+    declarationDepense = new DeclarationDepense(new Date(), 'Docteur', 25);
     synthese.declarerDepenses(declarationDepense);
     declarationDepense = new DeclarationDepense(
       new Date(),
-      'carburant adam',
-      56.8,
+      'Casino',
+      47.35,
     );
     synthese.declarerDepenses(declarationDepense);
     declarationDepense = new DeclarationDepense(
       new Date(),
-      'carburant adam',
-      50,
+      'Docteur',
+      23,
     );
-    declarationDepense.Confirmation = true;
     synthese.declarerDepenses(declarationDepense);
-    console.log('declarationDepense');
-    console.log(declarationDepense);
   });
 
   it(' Synthese doit enregistrer les depense declarées', () => {
@@ -143,7 +140,6 @@ describe('Declaration Depense', () => {
   });
 
   it(' Synthese doit enregistrer le bon nombre de depenses declarées', () => {
-    console.log(synthese.DeclarationsDepenses);
     expect(synthese.DeclarationsDepenses).toHaveLength(3);
   });
   it(' CheckDeclarations ne doit pas etre null', () => {
@@ -154,28 +150,42 @@ describe('Declaration Depense', () => {
     expect(uncheckTransactionsAndDeclaration).not.toBeNull();
   });
 
-  it(' CheckDeclarations doit retourner les transactions non confirmées ', () => {
-    const uncheckTransactionsAndDeclaration: [
-      Transaction,
-      DeclarationDepense,
-    ][] = synthese.checkDeclarations();
-    expect(uncheckTransactionsAndDeclaration[1]).toHaveLength(2);
+
+
+  it(' CheckDeclarations doit retourner les declarations compatible', () => {
+    const uncheckTransactionsAndDeclaration  = synthese.checkDeclarations();
+    const matchResults = uncheckTransactionsAndDeclaration.matchedTransactions;
+    expect(matchResults).toHaveLength(2);
   });
 
-  it(' CheckDeclarations doit retourner les declarations du meme montant ', () => {
-    const uncheckTransactionsAndDeclaration: [
-      Transaction,
-      DeclarationDepense,
-    ][] = synthese.checkDeclarations();
-    const transactionsNonTraitées = uncheckTransactionsAndDeclaration[0];
-    const declarationNonTraitées = uncheckTransactionsAndDeclaration[1];
-    console.log("transactionsNonTraitées")
-    console.log(transactionsNonTraitées)
-    console.log(transactionsNonTraitées[0])
-        console.log("declarationNonTraitées")
-    console.log(declarationNonTraitées)
-    // expect(transactionsNonTraitées.includes(tr=>tr.)).toHaveLength(2);
+
+  
+  it(' ConfirmDeclarations doit supprimer la declaration confirmée', () => {
+   const confirmedDeclaration:DeclarationDepense = new DeclarationDepense(new Date(), 'Docteur', 25);
+    const confirmedTransaction:Transaction = new Transaction();
+    confirmedTransaction.DateOpération=new Date("2023-02-15T23:00:00.000Z");
+    confirmedTransaction.Id=9;
+    confirmedTransaction.IntituléOpération="PAIEMENT PAR CARTE      \nX7127 DR BRUNEL J ST GERVA 15/02 ";
+    confirmedTransaction.MontantOpération=-25;
+    confirmedTransaction.Validation=false;
+synthese.ConfirmDeclaration(confirmedTransaction,confirmedDeclaration);
+    expect(synthese.DeclarationsDepenses).toHaveLength(2);
+
   });
 
+  it(' ConfirmDeclarations doit valider la transaction confirmée', () => {
+    const confirmedDeclaration:DeclarationDepense = new DeclarationDepense(new Date(), 'Docteur', 25);
+     const confirmedTransaction:Transaction = new Transaction();
+     confirmedTransaction.DateOpération=new Date("2023-02-15T23:00:00.000Z");
+     confirmedTransaction.Id=9;
+     confirmedTransaction.IntituléOpération="PAIEMENT PAR CARTE      \nX7127 DR BRUNEL J ST GERVA 15/02 ";
+     confirmedTransaction.MontantOpération=-25;
+     confirmedTransaction.Validation=false;
+     const nombreTransactionNonValidé=synthese.checkDeclarations().uncheckedTransactions.length
+//  synthese.ConfirmDeclaration(confirmedTransaction,confirmedDeclaration);
+ const nombreTransactionNonValidéApresConfirm=synthese.checkDeclarations().uncheckedTransactions.length
+     expect(nombreTransactionNonValidéApresConfirm).toEqual(297);
+ 
+   });
 
 });
