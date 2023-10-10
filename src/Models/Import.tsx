@@ -10,13 +10,15 @@ export class Import {
 
   getTransactions = (): Transaction[] => {
     try {
-      const workbook = XLSX.readFile(this.filepath, {
+      const workbook = XLSX.read(this.filepath, {
         type: 'binary',
         cellDates: true,
       });
       
       return getTransactions(workbook);
     } catch (error) {
+      console.log("error")
+      console.log(error)
         return [];
     }
 
@@ -49,7 +51,7 @@ export class Import {
   };
   getSolde = (): number => {
     try {
-      const workbook = XLSX.readFile(this.filepath, {
+      const workbook = XLSX.read(this.filepath, {
         type: 'binary',
         cellDates: true,
       });

@@ -30,6 +30,7 @@ export class Synthese {
   }
   getDepensesTransactions(): Transaction[] {
     let depenseTransactions: Transaction[] = [];
+    console.log(this.Transactions)
     this.Transactions.forEach(element => {
       if (element.MontantOpération < 0) depenseTransactions.push(element);
     });
@@ -37,6 +38,7 @@ export class Synthese {
   }
   getEntréeTransactions(): Transaction[] {
     let entreeTransactions: Transaction[] = [];
+    console.log(this.Transactions)
     this.Transactions.forEach(element => {
       if (element.MontantOpération > 0) entreeTransactions.push(element);
     });

@@ -14,9 +14,9 @@ import RNFS from 'react-native-fs';
 import * as Help_functions from '../BLL/Help_functions';
 import {Transaction} from '../Models/Transaction';
 import {Synthese} from '../Models/Synthese';
+import { Import } from '../Models/Import';
 const FilePicker = () => {
   const [pickedDocument, setPickedDocument] = useState(null);
-  console.log('cava?');
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.pick({
@@ -27,16 +27,32 @@ const FilePicker = () => {
       const filePath = result[0].uri.replace('file://', ''); // Remove 'file://' prefix
 
       const correctFilePath = await RNFS.readFile(filePath, 'ascii');
-      let transactions: Transaction[] = Help_functions.getData(correctFilePath);
-      console.log('transactions');
-      // console.log(transactions)
-      let synthese = new Synthese(transactions);
-      let depense = synthese.getDepenses();
-      let entree = synthese.getEntreeArgent();
+      // let transactions: Transaction[] = Help_functions.getData(correctFilePath);
+    const importer = new Import(correctFilePath);
+    const transactions = importer.getTransactions();
+    const solde = importer.getSolde();
+    let synthese = new Synthese(transactions);
+    const suivi = synthese.getSuiviSolde(solde);
+    let depense = synthese.getDepenses();
+    let entree = synthese.getEntreeArgent();
+    const depensetransactions =synthese.getDepensesTransactions();
+    const getEntréeTransactions =synthese.getEntréeTransactions();
+    console.log('transactions');
+    console.log(transactions)
+    console.log("solde")
+    console.log(solde)
+    console.log("suivi")
+    console.log(suivi)
       console.log('depense');
       console.log(depense);
       console.log('entree');
       console.log(entree);
+      console.log('depensetransactions');
+      console.log(depensetransactions);
+      console.log('getEntréeTransactions');
+      console.log(getEntréeTransactions);
+
+
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker
